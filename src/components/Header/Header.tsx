@@ -16,7 +16,7 @@ export function Header() {
     const [loading, _] = useContext(LoadingContext);
 
     const logoStyles: CSS.Properties = {
-        backgroundImage: `url("src/assets/${getTheme().logofilename}")`
+        backgroundImage: `url(${getTheme().logofilename})`
     };
 
     return (
