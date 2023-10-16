@@ -1,4 +1,3 @@
-import {defaultTheme, Theme, themes} from "@/vite-env";
 
 export const noop = () => undefined;
 
