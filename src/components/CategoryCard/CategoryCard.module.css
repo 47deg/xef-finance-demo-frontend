@@ -1,0 +1,29 @@
+.card {
+  display: inline-block;
+  border: none;
+  padding: 0px;
+  margin: 0px 5px;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.cardHeader {
+  border: 0px solid #FF9900;
+  padding: 0px 14px 0px;
+  cursor: pointer;
+}
+
+
+.icon {
+  border: 0px solid #FF9900;
+  color: var(--xef-background-color);
+  font-size: 46px;
+  padding: 0px;
+  margin: 0px;
+}
+
+.amount {
+  margin: 0 0 4px 0;
+  padding: 0;
+}
+

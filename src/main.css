@@ -1,0 +1,21 @@
+:root {
+  --xef-background-color: #0703f5;
+  --xef-primary-color: #eee;
+  --xef-secondary-color: #7650e9;
+  --xef-background-light-color: #f9f6fd;
+
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+@custom-media --xef-mobile-window (max-width: 768px);
+@custom-media --xef-tablet-window (max-width: 1200px);
+
+html {
+  color-scheme: light !important;
+}
+
+.root-container {
+  width: 100%;
+}

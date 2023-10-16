@@ -1,0 +1,15 @@
+.container {
+  max-width: 100%;
+  white-space: nowrap;
+  padding: 15px 0;
+  overflow: auto hidden;
+  background-color: #eee;
+  height: 80px;
+  position: sticky;
+  top: 65px;
+  z-index: 1;
+}
+
+.button {
+  display: inline-block;
+}

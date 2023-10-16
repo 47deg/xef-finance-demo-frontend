@@ -1,0 +1,12 @@
+.container {
+  overflow: scroll;
+  height: calc(100vh - 150px);
+}
+
+.icon {
+  border: 0px solid #FF9900;
+  color: #999999;
+  font-size: 30px;
+  padding: 0px;
+  margin: 0px 6px 0px 0px;
+}
