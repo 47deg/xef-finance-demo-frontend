@@ -30,11 +30,14 @@ export function ButtonBox() {
     const [categories, setCategories] = useState<CategoriesResponse>(initialCategories);
     const [error, setError] = useState<string | undefined>(undefined);
 
+    let preloading: boolean = true;
+
     useEffect(() => {
 
         async function loadCategories() {
             if (!loading) {
                 try {
+                    preloading = true;
                     setLoading(true);
                     console.group(`🖱️ Loading categories:`);
                     const categoriesApiConfig = apiConfigConstructor(categoriesApiBaseOptions);
@@ -49,6 +52,7 @@ export function ButtonBox() {
                 } finally {
                     console.groupEnd();
                     setLoading(false);
+                    preloading = false;
                 }
             }
         }
@@ -67,7 +71,7 @@ export function ButtonBox() {
                 </p>
             )}
 
-            {categories.categories.map(category =>
+            {preloading && categories.categories.map(category =>
                 <CategoryCard key={category.name} category={category}></CategoryCard>
             )}
 

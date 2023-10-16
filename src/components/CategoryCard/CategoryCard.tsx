@@ -115,6 +115,7 @@ function CategoryCard(props: CategoryCardProps) {
         }
     };
 
+    console.log(props.category)
 
     let amount = props.category.totalAmount * -1;
     return (
