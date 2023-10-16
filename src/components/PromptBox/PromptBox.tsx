@@ -15,6 +15,8 @@ import {
 import styles from './PromptBox.module.css';
 import {MessagesContext} from "@/state/Messages";
 import {TableResponseContext} from "@/state/TableResponse";
+import CSS from "csstype";
+import {getTheme} from "@/utils/constants.ts";
 
 const aiApiBaseOptions: ApiOptions = {
     endpointServer: defaultApiServer,
@@ -29,6 +31,9 @@ export function PromptBox() {
     const [prompt, setPrompt] = useState<string>('');
     const [messages, setMessages] = useContext(MessagesContext);
 
+    const buttonStyles: CSS.Properties = {
+        backgroundColor: getTheme().colorOne,
+    };
 
     const handleInput = async () => {
         if (!loading) {
@@ -114,7 +119,7 @@ export function PromptBox() {
                     },
                 }}
             />
-            <Button className={styles.sendbutton} onClick={handleInput}>
+            <Button className={styles.sendbutton} style={buttonStyles}  onClick={handleInput}>
                 SEND
             </Button>
         </>

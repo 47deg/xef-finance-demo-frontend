@@ -12,8 +12,13 @@
 
 .logo {
   margin: 0 1.5rem;
-  height: 3rem;
-  width: auto;
+  height: 74px;
+  width: 200px;
+  padding: 0;
+  /*background-image: var(--xef-logo-url);*/
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 130px 54px;
 }
 
 .user {

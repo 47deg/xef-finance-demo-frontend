@@ -1,4 +1,5 @@
 import {Box, Button, Card, CardHeader, Avatar} from "@mui/material";
+import CSS from 'csstype';
 import SportsEsportsOutlinedIcon from '@mui/icons-material/SportsEsportsOutlined';
 import * as myIcons from '@mui/icons-material';
 import styles from "@/components/CategoryCard/CategoryCard.module.css";
@@ -16,6 +17,7 @@ import {LoadingContext} from "@/state/Loading";
 import { LinearProgress } from '@mui/material';
 import {AttachMoneyOutlined, ConstructionOutlined, SvgIconComponent} from "@mui/icons-material";
 import {initialTableResponse, TableResponseContext} from "@/state/TableResponse";
+import {getTheme} from "@/utils/constants.ts";
 
 
 const categoryApiBaseOptions: ApiOptions = {
@@ -63,8 +65,13 @@ export let cat1Titles = new Map<string, string>([
     ["CREDIT CARD PAYMENTS", "CC Payments"]
 ]);
 
+const iconStyles: CSS.Properties = {
+    color: getTheme().colorOne,
+};
+
 const iconProps = {
-    className: styles.icon
+    className: styles.icon,
+    style: iconStyles
 };
 
 export function AddExtraProps(Component, extraProps) {
@@ -79,10 +86,14 @@ export function getIcon(s: string): JSX.Element {
 
 export function getCat1Title(s: string) {
     let maybeTitle = cat1Titles.get(s);
+    // console.log(s);
+    let otro = maybeTitle ??= s
     return maybeTitle ??= s
 }
 
 function CategoryCard(props: CategoryCardProps) {
+
+    console.log(getTheme());
 
     const [_, setTransactions] = useContext(TransactionsContext);
     const [tableResponse, setTableResponse] = useContext(TableResponseContext);
@@ -115,7 +126,7 @@ function CategoryCard(props: CategoryCardProps) {
         }
     };
 
-    console.log(props.category)
+    console.log(props.category.name);
 
     let amount = props.category.totalAmount * -1;
     return (
@@ -139,7 +150,7 @@ function CategoryCard(props: CategoryCardProps) {
                                     variant="determinate"
                                     color={"inherit"}
                                     sx={{
-                                        '& .MuiLinearProgress-barColorInherit': {backgroundColor: 'var(--xef-background-color);'},
+                                        '& .MuiLinearProgress-barColorInherit': {backgroundColor: getTheme().colorTwo},
                                     }}
                                 />
                             </>

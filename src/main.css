@@ -3,7 +3,9 @@
   --xef-primary-color: #eee;
   --xef-secondary-color: #7650e9;
   --xef-background-light-color: #f9f6fd;
-
+  --xef-logo-url: url('src/assets/CapitalOneLogo.png');
+  /*--xef-logo-url: url('src/assets/logo_bank_ireland.png');*/
+  /*--xef-logo-url: url('src/assets/logoXebia.png');*/
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;

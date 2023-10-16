@@ -24,7 +24,9 @@ const categoriesApiBaseOptions: ApiOptions = {
 
 const initialCategories: CategoriesResponse = {categories: []}
 
-
+function delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+}
 export function ButtonBox() {
     const [loading, setLoading] = useContext(LoadingContext);
     const [categories, setCategories] = useState<CategoriesResponse>(initialCategories);
@@ -44,6 +46,7 @@ export function ButtonBox() {
 
                     const response = await apiFetch<CategoriesResponse>(categoriesApiConfig);
                     setError('');
+                    // await delay(3000);
                     setCategories(response);
                 } catch (e) {
                     if (e instanceof Error) {

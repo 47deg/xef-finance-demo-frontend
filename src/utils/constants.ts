@@ -1,3 +1,5 @@
+import {defaultTheme, Theme, themes} from "@/vite-env";
+
 export const noop = () => undefined;
 
 export const transactionExample = {
@@ -13,3 +15,26 @@ export const transactionExample = {
   city: 'Huntersville',
   carbon: 45.23,
 };
+
+type Theme = {
+  name: string;
+  logofilename: string;
+  colorOne:string;
+  colorTwo:string;
+};
+
+export function getTheme(): Theme {
+
+  let defaultTheme: Theme = { name: "default", logofilename: "logoXebia.png", colorOne: "#691d5d", colorTwo: "#691d5d"}
+  let capital1Theme: Theme = { name: "capone", logofilename: "CapitalOneLogo.png", colorOne: "#004879", colorTwo: "#D22E1E"}
+  let irelandTheme: Theme = { name: "ireland", logofilename: "logo_bank_ireland.png", colorOne: "#0703f5", colorTwo: "#888888"}
+  const themes: Map<string, Theme> = new Map([
+    ["", defaultTheme],
+    ["capone", capital1Theme],
+    ["ireland", irelandTheme],
+  ]);
+
+  let chosenTheme: string = localStorage.getItem("theme") || ""
+  let maybeTheme: Theme = themes.get(chosenTheme);
+  return maybeTheme ?? defaultTheme
+}

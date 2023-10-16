@@ -18,7 +18,7 @@
   line-height: 30px;
   vertical-align: middle;
   text-align: center;
-  background-color: var(--xef-background-color);
+  /*background-color: var(--xef-background-color);*/
   color: #fff;
   width: calc(100% - 20px);
   cursor: pointer;

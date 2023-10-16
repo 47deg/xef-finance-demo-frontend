@@ -16,7 +16,7 @@
 
 .icon {
   border: 0px solid #FF9900;
-  color: var(--xef-background-color);
+  /*color: var(--xef-background-color);*/
   font-size: 46px;
   padding: 0px;
   margin: 0px;

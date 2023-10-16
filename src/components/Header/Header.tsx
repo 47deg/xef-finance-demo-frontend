@@ -8,14 +8,20 @@ import styles from './Header.module.css';
 import {useContext} from "react";
 import {LoadingContext} from "@/state/Loading";
 import CircularProgress from '@mui/material/CircularProgress';
+import CSS from "csstype";
+import {getTheme} from "@/utils/constants.ts";
 
 export function Header() {
 
     const [loading, _] = useContext(LoadingContext);
 
+    const logoStyles: CSS.Properties = {
+        backgroundImage: `url("src/assets/${getTheme().logofilename}")`
+    };
+
     return (
         <Box component="header" className={styles.header}>
-            <div className={styles.logo}></div>
+            <div className={styles.logo} style={logoStyles}></div>
             <div className={styles.titleContainer}>
                 <Typography variant="h4" className={styles.title}>
                     Personal Finance Manager
