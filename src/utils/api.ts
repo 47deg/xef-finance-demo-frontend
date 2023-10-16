@@ -1,6 +1,7 @@
 import { toSnakeCase } from '@/utils/strings';
 
-export const defaultApiServer = `${import.meta.env.VITE_API_SERVER_HOST}:${import.meta.env.VITE_API_SERVER_PORT}`;
+// export const defaultApiServer = `${import.meta.env.VITE_API_SERVER_HOST}:${import.meta.env.VITE_API_SERVER_PORT}`;
+export const defaultApiServer = `${import.meta.env.VITE_API_SERVER_HOST}`;
 
 export type ApiConfig = {
   url: URL;
