@@ -2,27 +2,13 @@ import {ChangeEvent, KeyboardEvent, useContext, useState} from 'react';
 import {Button, TextField} from '@mui/material';
 import {LoadingContext} from '@/state/Loading';
 import {TransactionsContext} from '@/state/Transactions';
-
-import {
-    defaultApiServer,
-    EndpointsEnum,
-    apiConfigConstructor,
-    ApiOptions,
-    apiFetch,
-    TransactionsResponse,
-} from '@/utils/api';
-
+import { TableResponse } from '@/utils/api';
 import styles from './PromptBox.module.css';
 import {MessagesContext} from "@/state/Messages";
 import {TableResponseContext} from "@/state/TableResponse";
 import CSS from "csstype";
 import {getTheme} from "@/utils/constants.ts";
-
-const aiApiBaseOptions: ApiOptions = {
-    endpointServer: defaultApiServer,
-    endpointPath: EndpointsEnum.aiTransactions,
-    endpointValue: '',
-};
+import {inferAI} from "@/utils/openai.ts";
 
 export function PromptBox() {
     const [transactions, setTransactions] = useContext(TransactionsContext);
@@ -53,26 +39,22 @@ export function PromptBox() {
                 setMessages(a);
                 setPrompt('');
 
-                const aiApiOptions = {
-                    ...aiApiBaseOptions,
-                    queryParams: {
-                        input: trimmedInput,
-                    },
-                };
-                const aiApiConfig = apiConfigConstructor(aiApiOptions);
-                const response = await apiFetch<TransactionsResponse>(
-                    aiApiConfig,
-                );
+                const aver = await inferAI(trimmedInput);
+                console.log(aver);
+                const emptyTableResponse: TableResponse = {
+                    columns: [],
+                    rows: []
+                }
 
                 const systemMessage: Message = {
-                    text: response.answer,
+                    text: aver.FriendlyResponse,
                     type: 'system',
                 };
 
                 setMessages([...a, systemMessage]);
 
                 setTransactions([]);
-                setTableResponse(response.tableResponse);
+                setTableResponse(emptyTableResponse);
 
                 console.info(`Set transactions to AI request data`);
             } finally {

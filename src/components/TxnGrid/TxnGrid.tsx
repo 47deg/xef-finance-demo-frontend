@@ -96,8 +96,6 @@ export function TxnGrid() {
 
     let c:GridColDef[]  = (tableResponse.columns.length == 11) ? txnColumns : createNewColumns(tableResponse.columns);
 
-    console.log(c);
-
     return (
         <Box className={styles.container}>
             {!!(tableResponse.columns && tableResponse.columns.length) && (

@@ -23,9 +23,6 @@ export function App() {
 
 
             </main>
-            {/*<Box className={styles.footerWrapper} sx={{boxShadow: 19}}>*/}
-            {/*    <Footer/>*/}
-            {/*</Box>*/}
         </>
     );
 }
