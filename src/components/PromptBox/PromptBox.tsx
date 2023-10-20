@@ -9,6 +9,7 @@ import {TableResponseContext} from "@/state/TableResponse";
 import CSS from "csstype";
 import {getTheme} from "@/utils/constants.ts";
 import {inferAI} from "@/utils/openai.ts";
+import {GenericQuery, QueryResponse} from "@/utils/db.ts";
 
 export function PromptBox() {
     const [transactions, setTransactions] = useContext(TransactionsContext);
@@ -35,26 +36,72 @@ export function PromptBox() {
                     text: trimmedInput,
                     type: 'user',
                 };
-                let a = [...messages, userMessage];
-                setMessages(a);
+                let msgs = [...messages, userMessage];
+                setMessages(msgs);
                 setPrompt('');
 
-                const aver = await inferAI(trimmedInput);
-                console.log(aver);
-                const emptyTableResponse: TableResponse = {
-                    columns: [],
-                    rows: []
+                const aiResponse = await inferAI(trimmedInput);
+
+                let mainQueryResponse: QueryResponse = null;
+                let detailedQueryResponse: QueryResponse = null;
+                let tabularResponse: TableResponse = {
+                    columns: ['Result'],
+                    rows: [['Empty']]
+                }
+                let friendlyResponse: String;
+
+
+                console.log("######################")
+                console.log(aiResponse);
+
+                // Main Query
+                if(aiResponse.MainResponse.length > 0) {
+                    mainQueryResponse = await GenericQuery(aiResponse.MainResponse);
+                    console.log(mainQueryResponse)
+                }
+
+                //Friendly Response
+                if(aiResponse.FriendlyResponse.includes("XXX") && mainQueryResponse) {
+                    friendlyResponse = aiResponse.FriendlyResponse.replace("XXX", mainQueryResponse.tableResponse.rows[0][0]);
+                } else {
+                    friendlyResponse = aiResponse.FriendlyResponse;
+                }
+
+                // Detailed Query
+                if(aiResponse.DetailedResponse && aiResponse.DetailedResponse.length > 0) {
+                    detailedQueryResponse = await GenericQuery(aiResponse.DetailedResponse);
+                    console.log(detailedQueryResponse);
+                }
+
+                //Tabular content
+                if(detailedQueryResponse && mainQueryResponse) {
+                    console.log("entra 1");
+                    if(detailedQueryResponse.rowCount > mainQueryResponse.rowCount) {
+                        console.log("entra 2");
+                        tabularResponse = detailedQueryResponse.tableResponse
+                    }
+                    else {
+                        console.log("entra 3");
+                        tabularResponse = mainQueryResponse.tableResponse
+                    }
+                }
+                else {
+                    console.log("entra 4");
+                    if(mainQueryResponse) {
+                        console.log("entra 5");
+                        tabularResponse = mainQueryResponse.tableResponse
+                    }
                 }
 
                 const systemMessage: Message = {
-                    text: aver.FriendlyResponse,
+                    text: friendlyResponse,
                     type: 'system',
                 };
 
-                setMessages([...a, systemMessage]);
+                setMessages([...msgs, systemMessage]);
 
                 setTransactions([]);
-                setTableResponse(emptyTableResponse);
+                setTableResponse(tabularResponse);
 
                 console.info(`Set transactions to AI request data`);
             } finally {

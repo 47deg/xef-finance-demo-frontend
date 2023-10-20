@@ -35,7 +35,6 @@ export function ButtonBox() {
                     const dbResponse: CategoriesResponse = {
                         categories: dbResult
                     }
-                    console.log(dbResponse.categories.length);
 
                     setError('');
                     // await delay(3000);

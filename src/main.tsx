@@ -22,9 +22,9 @@ createRoot(document.getElementById('root') as HTMLElement).render(
                 <MessagesProvider>
                     <TransactionsProvider>
                         <TableResponseProvider>
-                            <StrictMode>
+                            {/*<StrictMode>*/}
                                 <App/>
-                            </StrictMode>
+                            {/*</StrictMode>*/}
                         </TableResponseProvider>
                     </TransactionsProvider>
                 </MessagesProvider>

@@ -1,18 +1,13 @@
-import { createPool, QueryResult, QueryResultRow} from "@vercel/postgres";
+import {FullQueryResults, neon, NeonQueryFunction, QueryResultRow, QueryRows} from '@neondatabase/serverless';
 import {TableResponse} from "@/utils/api.ts";
 
 const postgres_url = `${import.meta.env.VITE_POSTGRES_URL}`;
-
-const pool = createPool({
-  connectionString: postgres_url
-});
 
 export type QueryResponse = {
   rowCount: number;
   columnsCount: number;
   tableResponse?: TableResponse;
 };
-
 
 function rowToCategory(row: QueryResultRow): Category {
   return {
@@ -38,46 +33,33 @@ function rowToTransaction(row: QueryResultRow): Transaction {
 }
 
 function getItems(columns: string[], row: QueryResultRow): string[] {
-  return columns.map(el => row[el] as string);
+  console.log(row);
+  return columns.map((el, i) => row[i] as string);
 }
 
 export async function CurrentCategories(): Promise<Category[]> {
-  const qr: QueryResult<QueryResultRow> = await pool.sql`SELECT category1, SUM(amount) AS total_amount FROM transaction WHERE EXTRACT(MONTH FROM date) = EXTRACT(MONTH FROM CURRENT_DATE)GROUP BY category1`;
-  return qr.rows.map((row) => rowToCategory(row));
+  const sql: NeonQueryFunction<false, false> = neon(postgres_url);
+  const qr = await sql('SELECT category1, SUM(amount) AS total_amount FROM transaction WHERE EXTRACT(MONTH FROM date) = EXTRACT(MONTH FROM CURRENT_DATE)GROUP BY category1', []);
+  return qr.map((row) => rowToCategory(row));
 }
 
 export async function TransactionsPerCategory(name: string): Promise<Transaction[]> {
-  const qr: QueryResult<QueryResultRow> = await pool.sql`SELECT * FROM transaction WHERE category1=${name} ORDER BY date DESC`;
-  return qr.rows.map((row) => rowToTransaction(row));
+  const sql: NeonQueryFunction<false, false> = neon(postgres_url);
+  const qr: QueryRows<boolean> = await sql('SELECT * FROM transaction WHERE category1=$1 ORDER BY date DESC', [name]);
+  return qr.map((row) => rowToTransaction(row));
 }
 
 
 export async function GenericQuery(query: string) {
-
-  const client = await pool.connect();
-  let qr = null;
-  try {
-    qr = await client.query('SELECT * FROM transaction WHERE category1=$1 ORDER BY date DESC', ['BROKERAGE']);
-  } catch (err) {
-    throw err;
-  } finally {
-    client.release();
-  }
-
-
-  // let c = `SELECT category1, SUM(amount) AS total_amount FROM transaction WHERE EXTRACT(MONTH FROM date) = EXTRACT(MONTH FROM CURRENT_DATE)GROUP BY category1`;
-  // const qr = await pool.sql`${c}`;
-  // const qr = await pool.sql`SELECT category1, SUM(amount) AS total_amount FROM transaction WHERE EXTRACT(MONTH FROM date) = EXTRACT(MONTH FROM CURRENT_DATE)GROUP BY category1`;
-  // const qr = await pool.query('SELECT * FROM transaction WHERE category1=$1 ORDER BY date DESC', ['BROKERAGE']);
-
-
+  const options = { arrayMode: true, fullResults: true };
+  const sql: NeonQueryFunction<boolean, boolean> = neon(`${import.meta.env.VITE_POSTGRES_URL}`, options);
+  const qr: FullQueryResults<boolean> = await sql(query, []);
   let myTableResponse: TableResponse = null;
 
   if(qr.rowCount > 0 && qr.fields.length > 0) {
     let myColumns: string[] = qr.fields.map((field) => field.name);
-    console.log(myColumns);
     let myRows: string[][] = qr.rows.map(row => getItems(myColumns, row));
-    console.log(myRows);
+    console.log(myRows[0]);
     myTableResponse = {
       columns: myColumns,
       rows: myRows

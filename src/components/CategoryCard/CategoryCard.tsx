@@ -91,10 +91,10 @@ function CategoryCard(props: CategoryCardProps) {
                 setLoading(true);
                 console.group(`🖱️ ${categoryName} category button clicked:`);
 
-                // const dbResult: Transaction[] = await TransactionsPerCategory(categoryName);
+                const dbResult: Transaction[] = await TransactionsPerCategory(categoryName);
 
                 setTableResponse(initialTableResponse);
-                // setTransactions(dbResult);
+                setTransactions(dbResult);
 
                 console.info(`Set transactions to category request data`);
             } finally {
