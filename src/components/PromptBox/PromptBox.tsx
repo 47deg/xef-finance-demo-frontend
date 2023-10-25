@@ -96,8 +96,10 @@ export function PromptBox() {
 
                 let friendlyReplaced: string;
 
+                let words: string[] = ['spent', 'amount', 'expenses', 'balance', 'paycheck', 'salary'];
+
                 if(response.valueName && response.value) {
-                    let possibleValue: string = (response.valueName.includes("spent") || response.valueName.includes("amount")) ? formatCurrency(response.value, getTheme()) : response.value;
+                    let possibleValue: string = (words.some(w => response.valueName.includes(w))) ? formatCurrency(response.value, getTheme()) : response.value;
                     friendlyReplaced = response.answer.replace("XXX", possibleValue);
                 }
                 else {
