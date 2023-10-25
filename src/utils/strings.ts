@@ -1,3 +1,4 @@
+import {Theme} from '@/utils/constants.ts';
 export const toSnakeCase = (str: string): string =>
   str
     .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
@@ -16,16 +17,18 @@ export const toCapitalizedSpaceCase = (str: string): string =>
     ?.map((x) => `${x.charAt(0).toUpperCase()}${x.slice(1).toLowerCase()}`)
     .join(' ') ?? str;
 
-export function formatCurrency(number) {
+export function formatCurrency(number, theme: Theme) {
     // Check if the input is a valid number
-    if (typeof number !== 'number' || isNaN(number)) {
+    let newNumber = (typeof number !== 'number' || isNaN(number))? +number :  number;
+
+    if (typeof newNumber !== 'number' || isNaN(newNumber)) {
         return 'Invalid Input';
     }
 
     // Convert the number to a string with dollar symbol
-    const formattedCurrency = number.toLocaleString('en-US', {
+    const formattedCurrency = newNumber.toLocaleString(theme.locale, {
         style: 'currency',
-        currency: 'USD',
+        currency: theme.currency,
     });
 
     return formattedCurrency;
