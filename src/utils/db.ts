@@ -58,8 +58,9 @@ export async function TransactionsPerCategory(name: string): Promise<Transaction
 export async function GenericQuery(query: string) {
   const options = { arrayMode: true, fullResults: true };
   const sql: NeonQueryFunction<boolean, boolean> = neon(`${import.meta.env.VITE_POSTGRES_URL}`, options);
-  const qr: FullQueryResults<boolean> = await sql(query, []);
+  const qrNT = await sql(query, []);
   let myTableResponse: TableResponse = null;
+  let qr: FullQueryResults<boolean> = qrNT as FullQueryResults<boolean>;
 
   if(qr.rowCount > 0 && qr.fields.length > 0) {
     let myColumns: string[] = qr.fields.map((field) => field.name);

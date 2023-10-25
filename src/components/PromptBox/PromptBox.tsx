@@ -51,7 +51,7 @@ export function PromptBox() {
                     columns: ['Result'],
                     rows: [['Empty']]
                 }
-                let friendlyResponse: String;
+                let friendlyResponse: string;
 
                 // Main Query
                 if(aiResponse.MainResponse.length > 0) {
