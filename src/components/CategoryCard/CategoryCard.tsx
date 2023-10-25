@@ -3,14 +3,7 @@ import CSS from 'csstype';
 import SportsEsportsOutlinedIcon from '@mui/icons-material/SportsEsportsOutlined';
 import * as myIcons from '@mui/icons-material';
 import styles from "@/components/CategoryCard/CategoryCard.module.css";
-import {
-    apiConfigConstructor,
-    apiFetch,
-    ApiOptions,
-    defaultApiServer,
-    EndpointsEnum,
-    TransactionsResponse
-} from "@/utils/api.ts";
+import { TransactionsResponse } from "@/utils/api.ts";
 import {useContext} from "react";
 import {TransactionsContext} from "@/state/Transactions";
 import {LoadingContext} from "@/state/Loading";
@@ -19,13 +12,8 @@ import {AttachMoneyOutlined, ConstructionOutlined, SvgIconComponent} from "@mui/
 import {initialTableResponse, TableResponseContext} from "@/state/TableResponse";
 import {getTheme} from "@/utils/constants.ts";
 import {formatCurrency} from "@/utils/strings.ts";
+import {TransactionsPerCategory} from "@/utils/db.ts";
 
-
-const categoryApiBaseOptions: ApiOptions = {
-    endpointServer: defaultApiServer,
-    endpointPath: EndpointsEnum.transactions,
-    endpointValue: '',
-};
 
 interface CategoryCardProps {
     category: Category;
@@ -106,18 +94,10 @@ function CategoryCard(props: CategoryCardProps) {
                 setLoading(true);
                 console.group(`🖱️ ${categoryName} category button clicked:`);
 
-                const categoryApiOptions = {
-                    ...categoryApiBaseOptions,
-                    queryParams: {
-                        category: categoryName,
-                    },
-                };
-                const categoryApiConfig = apiConfigConstructor(categoryApiOptions);
-                const {transactions} = await apiFetch<TransactionsResponse>(
-                    categoryApiConfig,
-                );
+                const dbResult: Transaction[] = await TransactionsPerCategory(categoryName);
+
                 setTableResponse(initialTableResponse);
-                setTransactions(transactions);
+                setTransactions(dbResult);
 
                 console.info(`Set transactions to category request data`);
             } finally {

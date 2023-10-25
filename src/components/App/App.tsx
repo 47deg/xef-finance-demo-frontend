@@ -8,10 +8,6 @@ import {Md5} from 'ts-md5'
 
 export function App() {
 
-    console.log(localStorage.getItem('token'));
-    console.log(Md5.hashStr(localStorage.getItem('token')));
-    console.log(`${import.meta.env.VITE_TOKEN}`);
-
     if(localStorage.getItem('token') && Md5.hashStr(localStorage.getItem('token')) == `${import.meta.env.VITE_TOKEN}`) {
         return (
             <>

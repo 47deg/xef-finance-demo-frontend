@@ -1,4 +1,5 @@
 import {Theme} from '@/utils/constants.ts';
+
 export const toSnakeCase = (str: string): string =>
   str
     .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
@@ -16,6 +17,10 @@ export const toCapitalizedSpaceCase = (str: string): string =>
     .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
     ?.map((x) => `${x.charAt(0).toUpperCase()}${x.slice(1).toLowerCase()}`)
     .join(' ') ?? str;
+
+export function dateNicely(date_Object: Date): string {
+    return date_Object.getFullYear() + "/" + (date_Object.getMonth() + 1) + "/" + +date_Object.getDate();
+}
 
 export function formatCurrency(number, theme: Theme) {
     // Check if the input is a valid number

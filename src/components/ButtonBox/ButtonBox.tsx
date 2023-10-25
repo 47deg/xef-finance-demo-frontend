@@ -3,24 +3,12 @@ import {Box} from '@mui/material';
 
 import {LoadingContext} from '@/state/Loading/';
 
-import {
-    defaultApiServer,
-    EndpointsEnum,
-    apiConfigConstructor,
-    ApiOptions,
-    apiFetch,
-    CategoriesResponse
-} from '@/utils/api';
+import { CategoriesResponse } from '@/utils/api';
 
 import styles from './ButtonBox.module.css';
 import CategoryCard from "@/components/CategoryCard/CategoryCard.tsx";
+import {CurrentCategories, GenericQuery} from "@/utils/db.ts";
 
-
-const categoriesApiBaseOptions: ApiOptions = {
-    endpointServer: defaultApiServer,
-    endpointPath: EndpointsEnum.categories,
-    endpointValue: '',
-};
 
 const initialCategories: CategoriesResponse = {categories: []}
 
@@ -42,12 +30,15 @@ export function ButtonBox() {
                     preloading = true;
                     setLoading(true);
                     console.group(`🖱️ Loading categories:`);
-                    const categoriesApiConfig = apiConfigConstructor(categoriesApiBaseOptions);
 
-                    const response = await apiFetch<CategoriesResponse>(categoriesApiConfig);
+                    const dbResult = await CurrentCategories()
+                    const dbResponse: CategoriesResponse = {
+                        categories: dbResult
+                    }
+
                     setError('');
                     // await delay(3000);
-                    setCategories(response);
+                    setCategories(dbResponse);
                 } catch (e) {
                     if (e instanceof Error) {
                         setError(e.message);

@@ -2,28 +2,15 @@ import {ChangeEvent, KeyboardEvent, useContext, useState} from 'react';
 import {Button, TextField} from '@mui/material';
 import {LoadingContext} from '@/state/Loading';
 import {TransactionsContext} from '@/state/Transactions';
-
-import {
-    defaultApiServer,
-    EndpointsEnum,
-    apiConfigConstructor,
-    ApiOptions,
-    apiFetch,
-    TransactionsResponse,
-} from '@/utils/api';
-
+import { TableResponse } from '@/utils/api';
 import styles from './PromptBox.module.css';
 import {MessagesContext} from "@/state/Messages";
 import {TableResponseContext} from "@/state/TableResponse";
 import CSS from "csstype";
 import {getTheme} from "@/utils/constants.ts";
 import {formatCurrency} from "@/utils/strings.ts";
-
-const aiApiBaseOptions: ApiOptions = {
-    endpointServer: defaultApiServer,
-    endpointPath: EndpointsEnum.aiTransactions,
-    endpointValue: '',
-};
+import {inferAI} from "@/utils/openai.ts";
+import {GenericQuery, QueryResponse} from "@/utils/db.ts";
 
 export function PromptBox() {
     const [transactions, setTransactions] = useContext(TransactionsContext);
@@ -50,40 +37,75 @@ export function PromptBox() {
                     text: trimmedInput,
                     type: 'user',
                 };
-                let a = [...messages, userMessage];
-                setMessages(a);
+                let msgs = [...messages, userMessage];
+                setMessages(msgs);
                 setPrompt('');
 
-                const aiApiOptions = {
-                    ...aiApiBaseOptions,
-                    queryParams: {
-                        input: trimmedInput,
-                    },
-                };
-                const aiApiConfig = apiConfigConstructor(aiApiOptions);
-                const response = await apiFetch<TransactionsResponse>(
-                    aiApiConfig,
-                );
+                const aiResponse = await inferAI(trimmedInput);
 
-                let friendlyReplaced: string;
+                console.log(aiResponse);
 
-                if(response.valueName && response.value) {
-                    let possibleValue: string = (response.valueName.includes("spent") || response.valueName.includes("amount")) ? formatCurrency(response.value, getTheme()) : response.value;
-                    friendlyReplaced = response.answer.replace("XXX", possibleValue);
+                let mainQueryResponse: QueryResponse = null;
+                let detailedQueryResponse: QueryResponse = null;
+                let tabularResponse: TableResponse = {
+                    columns: ['Result'],
+                    rows: [['Empty']]
+                }
+                let friendlyResponse: string;
+
+                // Main Query
+                if(aiResponse.MainResponse.length > 0) {
+                    mainQueryResponse = await GenericQuery(aiResponse.MainResponse);
+                }
+
+                //Friendly Response
+                if(aiResponse.FriendlyResponse.includes("XXX") && mainQueryResponse) {
+
+                    let words: string[] = ['spent', 'amount', 'expenses', 'balance', 'paycheck', 'salary'];
+
+                    if(mainQueryResponse.tableResponse.columns[0] && mainQueryResponse.tableResponse.rows[0][0]) {
+                        let possibleValue: string = (words.some(w => mainQueryResponse.tableResponse.columns[0])) ? formatCurrency(mainQueryResponse.tableResponse.rows[0][0], getTheme()) : mainQueryResponse.tableResponse.rows[0][0];
+                        friendlyResponse = aiResponse.FriendlyResponse.replace("XXX", possibleValue);
+                    }
+                    else {
+                        friendlyResponse = aiResponse.FriendlyResponse;
+                    }
+
+                } else {
+                    friendlyResponse = aiResponse.FriendlyResponse;
+                }
+
+                // Detailed Query
+                if(aiResponse.DetailedResponse && aiResponse.DetailedResponse.length > 0) {
+                    detailedQueryResponse = await GenericQuery(aiResponse.DetailedResponse);
+                }
+
+                //Tabular content
+                if(detailedQueryResponse && mainQueryResponse) {
+                    if(detailedQueryResponse.rowCount > mainQueryResponse.rowCount) {
+                        tabularResponse = detailedQueryResponse.tableResponse
+                    }
+                    else {
+                        tabularResponse = mainQueryResponse.tableResponse
+                    }
                 }
                 else {
-                    friendlyReplaced = response.answer;
+                    if(mainQueryResponse) {
+                        tabularResponse = mainQueryResponse.tableResponse
+                    }
                 }
 
+
+
                 const systemMessage: Message = {
-                    text: friendlyReplaced,
+                    text: friendlyResponse,
                     type: 'system',
                 };
 
-                setMessages([...a, systemMessage]);
+                setMessages([...msgs, systemMessage]);
 
                 setTransactions([]);
-                setTableResponse(response.tableResponse);
+                setTableResponse(tabularResponse);
 
                 console.info(`Set transactions to AI request data`);
             } finally {
