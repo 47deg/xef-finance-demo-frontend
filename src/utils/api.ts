@@ -36,7 +36,9 @@ export type TransactionsResponse = {
   input: string,
   answer: string,
   transactions: Array<Transaction>,
-  tableResponse: TableResponse
+  tableResponse: TableResponse,
+  value: string;
+  valueName: string;
 };
 
 export type CategoriesResponse = {

@@ -8,6 +8,7 @@ import {MessagesContext} from "@/state/Messages";
 import {TableResponseContext} from "@/state/TableResponse";
 import CSS from "csstype";
 import {getTheme} from "@/utils/constants.ts";
+import {formatCurrency} from "@/utils/strings.ts";
 import {inferAI} from "@/utils/openai.ts";
 import {GenericQuery, QueryResponse} from "@/utils/db.ts";
 
@@ -93,8 +94,18 @@ export function PromptBox() {
                     }
                 }
 
+                let friendlyReplaced: string;
+
+                if(response.valueName && response.value) {
+                    let possibleValue: string = (response.valueName.includes("spent") || response.valueName.includes("amount")) ? formatCurrency(response.value, getTheme()) : response.value;
+                    friendlyReplaced = response.answer.replace("XXX", possibleValue);
+                }
+                else {
+                    friendlyReplaced = response.answer;
+                }
+
                 const systemMessage: Message = {
-                    text: friendlyResponse,
+                    text: friendlyReplaced,
                     type: 'system',
                 };
 

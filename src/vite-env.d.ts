@@ -29,6 +29,7 @@ interface ImportMetaEnv {
   readonly VITE_API_SERVER_PORT: string
   readonly VITE_POSTGRES_URL: string
   readonly VITE_OPENAI_API_KEY: string
+  readonly VITE_TOKEN: string
 }
 
 interface ImportMeta {

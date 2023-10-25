@@ -11,6 +11,7 @@ import { LinearProgress } from '@mui/material';
 import {AttachMoneyOutlined, ConstructionOutlined, SvgIconComponent} from "@mui/icons-material";
 import {initialTableResponse, TableResponseContext} from "@/state/TableResponse";
 import {getTheme} from "@/utils/constants.ts";
+import {formatCurrency} from "@/utils/strings.ts";
 import {TransactionsPerCategory} from "@/utils/db.ts";
 
 
@@ -81,6 +82,8 @@ export function getCat1Title(s: string) {
 
 function CategoryCard(props: CategoryCardProps) {
 
+    // console.log(getTheme());
+
     const [_, setTransactions] = useContext(TransactionsContext);
     const [tableResponse, setTableResponse] = useContext(TableResponseContext);
     const [loading, setLoading] = useContext(LoadingContext);
@@ -120,7 +123,7 @@ function CategoryCard(props: CategoryCardProps) {
                         title={getCat1Title(props.category.name)}
                         subheader={
                             <>
-                                <p className={styles.amount}>{`$${amount}`}</p>
+                                <p className={styles.amount}>{`${formatCurrency(amount, getTheme())}`}</p>
                                 <LinearProgress
                                     value={25}
                                     variant="determinate"
