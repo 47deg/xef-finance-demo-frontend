@@ -17,6 +17,7 @@ import {MessagesContext} from "@/state/Messages";
 import {TableResponseContext} from "@/state/TableResponse";
 import CSS from "csstype";
 import {getTheme} from "@/utils/constants.ts";
+import {formatCurrency} from "@/utils/strings.ts";
 
 const aiApiBaseOptions: ApiOptions = {
     endpointServer: defaultApiServer,
@@ -64,8 +65,18 @@ export function PromptBox() {
                     aiApiConfig,
                 );
 
+                let friendlyReplaced: string;
+
+                if(response.valueName && response.value) {
+                    let possibleValue: string = (response.valueName.includes("spent") || response.valueName.includes("amount")) ? formatCurrency(response.value, getTheme()) : response.value;
+                    friendlyReplaced = response.answer.replace("XXX", possibleValue);
+                }
+                else {
+                    friendlyReplaced = response.answer;
+                }
+
                 const systemMessage: Message = {
-                    text: response.answer,
+                    text: friendlyReplaced,
                     type: 'system',
                 };
 

@@ -11,6 +11,7 @@ import styles from './TxnGrid.module.css';
 import * as myIcons from "@mui/icons-material";
 import {TableResponseContext} from "@/state/TableResponse";
 import {TableResponse} from "@/utils/api.ts";
+import {getTheme} from "@/utils/constants.ts";
 
 const minWidth = 100;
 
@@ -58,7 +59,7 @@ const txnColumns: GridColDef[] = [
             if (str.includes('$')) {
                 return str
             } else {
-                return formatCurrency(params.value);
+                return formatCurrency(params.value, getTheme());
             }
         },
     },
@@ -96,7 +97,7 @@ export function TxnGrid() {
 
     let c:GridColDef[]  = (tableResponse.columns.length == 11) ? txnColumns : createNewColumns(tableResponse.columns);
 
-    console.log(c);
+    // console.log(c);
 
     return (
         <Box className={styles.container}>
