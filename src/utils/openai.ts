@@ -24,12 +24,10 @@ export async function inferAI(input: string): Promise<AIResponse> {
     });
 
     const response01 = chatCompletion1.choices[0];
-    console.log(`Response 01: ${response01}`);
 
     let aiResponse: AIResponse = null;
 
     try {
-        console.log("entro aqui");
         aiResponse = JSON.parse(response01.message.content) as AIResponse
     } catch (e) {
         if (e instanceof Error) {
@@ -44,7 +42,6 @@ export async function inferAI(input: string): Promise<AIResponse> {
         });
 
         const response02 = chatCompletion2.choices[0];
-        console.log(response02);
         aiResponse = {
             MainResponse: "",
             FriendlyResponse: response02.message.content,

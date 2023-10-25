@@ -5,7 +5,7 @@ import {getCat1Title, icons, AddExtraProps} from '@/components/CategoryCard';
 import {AttachMoneyOutlined, ConstructionOutlined, SvgIconComponent} from "@mui/icons-material";
 import {TransactionsContext} from '@/state/Transactions';
 
-import {formatCurrency, toCapitalizedSpaceCase, toSnakeCase, toSpaceCase} from '@/utils/strings';
+import {dateNicely, formatCurrency, toCapitalizedSpaceCase, toSnakeCase, toSpaceCase} from '@/utils/strings';
 
 import styles from './TxnGrid.module.css';
 import * as myIcons from "@mui/icons-material";
@@ -39,7 +39,15 @@ const txnColumns: GridColDef[] = [
             </>
         )
     },
-    {field: 'date', headerName: 'Date', width: 120},
+    {field: 'date', headerName: 'Date', width: 120, valueGetter: (params) => {
+
+            if (!params.value) {
+                return params.value;
+            }
+
+            return (typeof params.value.getMonth === 'function')?dateNicely(params.value as Date): params.value as string;
+        }
+    },
     {
         field: 'transaction_details',
         headerName: 'Details',

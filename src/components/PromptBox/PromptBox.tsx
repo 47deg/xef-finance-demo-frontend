@@ -43,6 +43,8 @@ export function PromptBox() {
 
                 const aiResponse = await inferAI(trimmedInput);
 
+                console.log(aiResponse);
+
                 let mainQueryResponse: QueryResponse = null;
                 let detailedQueryResponse: QueryResponse = null;
                 let tabularResponse: TableResponse = {
@@ -51,19 +53,24 @@ export function PromptBox() {
                 }
                 let friendlyResponse: String;
 
-
-                console.log("######################")
-                console.log(aiResponse);
-
                 // Main Query
                 if(aiResponse.MainResponse.length > 0) {
                     mainQueryResponse = await GenericQuery(aiResponse.MainResponse);
-                    console.log(mainQueryResponse)
                 }
 
                 //Friendly Response
                 if(aiResponse.FriendlyResponse.includes("XXX") && mainQueryResponse) {
-                    friendlyResponse = aiResponse.FriendlyResponse.replace("XXX", mainQueryResponse.tableResponse.rows[0][0]);
+
+                    let words: string[] = ['spent', 'amount', 'expenses', 'balance', 'paycheck', 'salary'];
+
+                    if(mainQueryResponse.tableResponse.columns[0] && mainQueryResponse.tableResponse.rows[0][0]) {
+                        let possibleValue: string = (words.some(w => mainQueryResponse.tableResponse.columns[0])) ? formatCurrency(mainQueryResponse.tableResponse.rows[0][0], getTheme()) : mainQueryResponse.tableResponse.rows[0][0];
+                        friendlyResponse = aiResponse.FriendlyResponse.replace("XXX", possibleValue);
+                    }
+                    else {
+                        friendlyResponse = aiResponse.FriendlyResponse;
+                    }
+
                 } else {
                     friendlyResponse = aiResponse.FriendlyResponse;
                 }
@@ -71,43 +78,27 @@ export function PromptBox() {
                 // Detailed Query
                 if(aiResponse.DetailedResponse && aiResponse.DetailedResponse.length > 0) {
                     detailedQueryResponse = await GenericQuery(aiResponse.DetailedResponse);
-                    console.log(detailedQueryResponse);
                 }
 
                 //Tabular content
                 if(detailedQueryResponse && mainQueryResponse) {
-                    console.log("entra 1");
                     if(detailedQueryResponse.rowCount > mainQueryResponse.rowCount) {
-                        console.log("entra 2");
                         tabularResponse = detailedQueryResponse.tableResponse
                     }
                     else {
-                        console.log("entra 3");
                         tabularResponse = mainQueryResponse.tableResponse
                     }
                 }
                 else {
-                    console.log("entra 4");
                     if(mainQueryResponse) {
-                        console.log("entra 5");
                         tabularResponse = mainQueryResponse.tableResponse
                     }
                 }
 
-                let friendlyReplaced: string;
 
-                let words: string[] = ['spent', 'amount', 'expenses', 'balance', 'paycheck', 'salary'];
-
-                if(response.valueName && response.value) {
-                    let possibleValue: string = (words.some(w => response.valueName.includes(w))) ? formatCurrency(response.value, getTheme()) : response.value;
-                    friendlyReplaced = response.answer.replace("XXX", possibleValue);
-                }
-                else {
-                    friendlyReplaced = response.answer;
-                }
 
                 const systemMessage: Message = {
-                    text: friendlyReplaced,
+                    text: friendlyResponse,
                     type: 'system',
                 };
 

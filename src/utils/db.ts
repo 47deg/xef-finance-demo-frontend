@@ -1,5 +1,6 @@
 import {FullQueryResults, neon, NeonQueryFunction, QueryResultRow, QueryRows} from '@neondatabase/serverless';
 import {TableResponse} from "@/utils/api.ts";
+import {dateNicely} from "@/utils/strings.ts";
 
 const postgres_url = `${import.meta.env.VITE_POSTGRES_URL}`;
 
@@ -32,9 +33,13 @@ function rowToTransaction(row: QueryResultRow): Transaction {
   }
 }
 
+function getItem(row: QueryResultRow, columnName: string, index: number): string {
+  if(columnName.includes('date') || columnName.includes('Date')) return dateNicely(row[index] as Date)
+  else return row[index] as string
+}
+
 function getItems(columns: string[], row: QueryResultRow): string[] {
-  console.log(row);
-  return columns.map((el, i) => row[i] as string);
+  return columns.map((element, i) => getItem(row, element, i));
 }
 
 export async function CurrentCategories(): Promise<Category[]> {
@@ -59,7 +64,6 @@ export async function GenericQuery(query: string) {
   if(qr.rowCount > 0 && qr.fields.length > 0) {
     let myColumns: string[] = qr.fields.map((field) => field.name);
     let myRows: string[][] = qr.rows.map(row => getItems(myColumns, row));
-    console.log(myRows[0]);
     myTableResponse = {
       columns: myColumns,
       rows: myRows
