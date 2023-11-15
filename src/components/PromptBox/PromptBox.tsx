@@ -64,7 +64,7 @@ export function PromptBox() {
                     let words: string[] = ['spent', 'amount', 'expenses', 'balance', 'paycheck', 'salary'];
 
                     if(mainQueryResponse.tableResponse.columns[0] && mainQueryResponse.tableResponse.rows[0][0]) {
-                        let possibleValue: string = (words.some(w => mainQueryResponse.tableResponse.columns[0])) ? formatCurrency(mainQueryResponse.tableResponse.rows[0][0], getTheme()) : mainQueryResponse.tableResponse.rows[0][0];
+                        let possibleValue: string = (words.some(w => mainQueryResponse.tableResponse.columns[0]) && !mainQueryResponse.tableResponse.columns[0].includes('count')) ? formatCurrency(mainQueryResponse.tableResponse.rows[0][0], getTheme()) : mainQueryResponse.tableResponse.rows[0][0];
                         friendlyResponse = aiResponse.FriendlyResponse.replace("XXX", possibleValue);
                     }
                     else {
@@ -82,15 +82,22 @@ export function PromptBox() {
 
                 //Tabular content
                 if(detailedQueryResponse && mainQueryResponse) {
+                    console.log('1');
                     if(detailedQueryResponse.rowCount > mainQueryResponse.rowCount) {
+                        console.log('2');
                         tabularResponse = detailedQueryResponse.tableResponse
+                        // tabularResponse = mainQueryResponse.tableResponse
                     }
                     else {
-                        tabularResponse = mainQueryResponse.tableResponse
+                        console.log('3');
+                        // tabularResponse = mainQueryResponse.tableResponse
+                        tabularResponse = detailedQueryResponse.tableResponse
                     }
                 }
                 else {
+                    console.log('4');
                     if(mainQueryResponse) {
+                        console.log('5');
                         tabularResponse = mainQueryResponse.tableResponse
                     }
                 }
