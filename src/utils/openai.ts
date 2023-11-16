@@ -20,32 +20,47 @@ export async function inferAI(input: string): Promise<AIResponse> {
             {role: 'system', content: prompt1},
             {role: 'user', content: input}
         ],
-        model: 'gpt-4',
+        model: 'gpt-4-1106-preview',
+        // model: 'gpt-4',
     });
 
     const response01 = chatCompletion1.choices[0];
+    const aiResponseText = response01.message.content;
+    const originalMessage = aiResponseText || ''
 
     let aiResponse: AIResponse = null;
 
     try {
-        aiResponse = JSON.parse(response01.message.content) as AIResponse
+        aiResponse = JSON.parse(originalMessage) as AIResponse
     } catch (e) {
         if (e instanceof Error) {
             console.log(e.message);
         }
-        const chatCompletion2 = await openai.chat.completions.create({
-            messages: [
-                {role: 'system', content: prompt2},
-                {role: 'user', content: input}
-            ],
-            model: 'gpt-4',
-        });
 
-        const response02 = chatCompletion2.choices[0];
-        aiResponse = {
-            MainResponse: "",
-            FriendlyResponse: response02.message.content,
+        try {
+            const possible: string = /```json(.*?)```/gs.exec(originalMessage)?.[1] || /```(.*?)```/gs.exec(originalMessage)?.[1] || ''
+            aiResponse = JSON.parse(possible) as AIResponse
+        } catch (e) {
+            if (e instanceof Error) {
+                console.log(e.message)
+            }
+
+            const chatCompletion2 = await openai.chat.completions.create({
+                messages: [
+                    {role: 'system', content: prompt2},
+                    {role: 'user', content: input}
+                ],
+                model: 'gpt-4',
+            });
+
+            const response02 = chatCompletion2.choices[0];
+            aiResponse = {
+                MainResponse: "",
+                FriendlyResponse: response02.message.content,
+            }
         }
+
+
     }
 
     return aiResponse;
@@ -92,7 +107,7 @@ const prompt1: string = `
           The expected result is a JSON that needs to include 3 fields. These are the criteria to generate all the fields that compose the final result:
           - MainResponse: This is mandatory string and it is the SQL that satisfies the input of the user.
           - FriendlyResponse: This is mandatory string and this is a friendly sentence that summarize the output. In case that the MainResponse is a query that returns one single item (when the query includes COUNT, MAX, MIN, SUM, AVG, etc.), the friendly sentence can refer that data as XXX, that we can inject once we run the sql query.
-          - DetailedResponse: This is an optional field (string). In case that the MainResponse represents an operation like COUNT, MAX, MIN, AVG, SUM, etc, you have to generate another similar query to show all the transactions involved in the MainResponse.
+          - DetailedResponse: This is an optional field (string). In case that the MainResponse represents an operation like COUNT, MAX, MIN, AVG, SUM, etc, you have to generate another similar query to show all the transactions involved in the MainResponse, this query should show all the fields of the transactions
       }
       generate() {
           STOP! Analyze Schema.
@@ -107,6 +122,8 @@ const prompt1: string = `
             Debit transactions have negative amount. Keep that into account when the input ask for expenses, or for the most expensive debit transactions.
             Make sure that the result includes all the mandatory fields, and analyze if the optional ones are needed.
             Don't include an explanation, just the JSON response that includes the MainResponse, FriendlyResponse and the DetailedResponse.
+            Make sure the DetailedResponse is a valid SQL query that returns all the transactions involved in the MainResponse, showing all the fields.
+            If your response is not a valid JSON, someone might get injured. Please only respond in JSON format. If you add an explanation should be part of the "friendlyResponse" field.
           }
         }
         /generate - Generate the response that satisfies the user's input. 
