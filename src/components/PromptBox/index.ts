@@ -1,1 +1,1 @@
-export * from './PromptBox';
+export * from './PromptBox'

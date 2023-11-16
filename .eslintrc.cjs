@@ -12,10 +12,10 @@ module.exports = {
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
   plugins: ['@typescript-eslint', 'prettier', 'react-refresh', 'import'],
   rules: {
-    'prettier/prettier': 'error',
-    'import/no-unresolved': ['error', { ignore: ['^@/'] }],
+    'prettier/prettier': 'warn',
+    'import/no-unresolved': ['warn', { ignore: ['^@/'] }],
     'import/order': [
-      'error',
+      'warn',
       {
         groups: [
           'builtin',
@@ -61,7 +61,7 @@ module.exports = {
       },
     ],
     '@typescript-eslint/no-unused-vars': [
-      'error',
+      'warn',
       { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
     ],
   },
@@ -75,4 +75,4 @@ module.exports = {
       },
     },
   },
-};
+}

@@ -1,1 +1,1 @@
-export * from './TxnGrid';
+export * from './TxnGrid'

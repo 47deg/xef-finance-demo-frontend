@@ -1,1 +1,1 @@
-export * from './HourglassLoader';
+export * from './HourglassLoader'

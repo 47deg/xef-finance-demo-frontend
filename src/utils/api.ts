@@ -1,4 +1,4 @@
-import { toSnakeCase } from '@/utils/strings';
+import { toSnakeCase } from '@/utils/strings'
 
 // export const defaultApiServer = `${import.meta.env.VITE_API_SERVER_HOST}:${import.meta.env.VITE_API_SERVER_PORT}`;
 // export const defaultApiServer = `${import.meta.env.VITE_API_SERVER_HOST}`;
@@ -25,25 +25,25 @@ import { toSnakeCase } from '@/utils/strings';
 
 export type Rows = {
   row: Array<string>
-};
+}
 
 export type TableResponse = {
-  columns: string[],
+  columns: string[]
   rows: string[][]
-};
+}
 
 export type TransactionsResponse = {
-  input: string,
-  answer: string,
-  transactions: Array<Transaction>,
-  tableResponse: TableResponse,
-  value: string;
-  valueName: string;
-};
+  input: string
+  answer: string
+  transactions: Array<Transaction>
+  tableResponse: TableResponse
+  value: string
+  valueName: string
+}
 
 export type CategoriesResponse = {
-  categories: Array<Category>;
-};
+  categories: Array<Category>
+}
 
 // export type EndpointsTypes = {
 //   aiTransactions: TransactionsResponse;

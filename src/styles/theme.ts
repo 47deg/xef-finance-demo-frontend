@@ -1,6 +1,6 @@
-import { ThemeOptions, createTheme } from '@mui/material';
+import { ThemeOptions, createTheme } from '@mui/material'
 
-import '@/styles/typography.css';
+import '@/styles/typography.css'
 
 export const themeOptions: ThemeOptions = {
   palette: {
@@ -160,6 +160,6 @@ export const themeOptions: ThemeOptions = {
   shape: {
     borderRadius: 6,
   },
-};
+}
 
-export const theme = createTheme(themeOptions);
+export const theme = createTheme(themeOptions)

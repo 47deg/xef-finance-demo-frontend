@@ -1,8 +1,8 @@
-import { Box } from '@mui/material';
+import { Box } from '@mui/material'
 
-import logo from '@/assets/xef-brand-name-white.svg';
+import logo from '@/assets/xef-brand-name-white.svg'
 
-import styles from './Footer.module.css';
+import styles from './Footer.module.css'
 
 export function Footer() {
   return (
@@ -14,5 +14,5 @@ export function Footer() {
         </a>
       </Box>
     </footer>
-  );
+  )
 }

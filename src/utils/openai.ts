@@ -1,72 +1,73 @@
-import OpenAI from 'openai';
-import {CurrentCategories} from "@/utils/db.ts";
-import {CategoriesResponse} from "@/utils/api.ts";
+import OpenAI from 'openai'
+
+import { CurrentCategories } from '@/utils/db.ts'
+import { CategoriesResponse } from '@/utils/api.ts'
 
 const openai = new OpenAI({
-    apiKey: `${import.meta.env.VITE_OPENAI_API_KEY}`,
-    dangerouslyAllowBrowser: true
-});
+  apiKey: `${import.meta.env.VITE_OPENAI_API_KEY}`,
+  dangerouslyAllowBrowser: true,
+})
 
 export type AIResponse = {
-    MainResponse: string;
-    FriendlyResponse: string;
-    DetailedResponse?: string;
-};
-
-export async function inferAI(input: string): Promise<AIResponse> {
-
-    const chatCompletion1 = await openai.chat.completions.create({
-        messages: [
-            {role: 'system', content: prompt1},
-            {role: 'user', content: input}
-        ],
-        model: 'gpt-4-1106-preview',
-        // model: 'gpt-4',
-    });
-
-    const response01 = chatCompletion1.choices[0];
-    const aiResponseText = response01.message.content;
-    const originalMessage = aiResponseText || ''
-
-    let aiResponse: AIResponse = null;
-
-    try {
-        aiResponse = JSON.parse(originalMessage) as AIResponse
-    } catch (e) {
-        if (e instanceof Error) {
-            console.log(e.message);
-        }
-
-        try {
-            const possible: string = /```json(.*?)```/gs.exec(originalMessage)?.[1] || /```(.*?)```/gs.exec(originalMessage)?.[1] || ''
-            aiResponse = JSON.parse(possible) as AIResponse
-        } catch (e) {
-            if (e instanceof Error) {
-                console.log(e.message)
-            }
-
-            const chatCompletion2 = await openai.chat.completions.create({
-                messages: [
-                    {role: 'system', content: prompt2},
-                    {role: 'user', content: input}
-                ],
-                model: 'gpt-4',
-            });
-
-            const response02 = chatCompletion2.choices[0];
-            aiResponse = {
-                MainResponse: "",
-                FriendlyResponse: response02.message.content,
-            }
-        }
-
-
-    }
-
-    return aiResponse;
+  MainResponse: string
+  FriendlyResponse: string
+  DetailedResponse?: string
 }
 
-const prompt1: string = `
+export async function inferAI(input: string): Promise<AIResponse> {
+  const chatCompletion1 = await openai.chat.completions.create({
+    messages: [
+      { role: 'system', content: prompt1 },
+      { role: 'user', content: input },
+    ],
+    model: 'gpt-4-1106-preview',
+    // model: 'gpt-4',
+  })
+
+  const response01 = chatCompletion1.choices[0]
+  const aiResponseText = response01.message.content
+  const originalMessage = aiResponseText || ''
+
+  let aiResponse: AIResponse = null
+
+  try {
+    aiResponse = JSON.parse(originalMessage) as AIResponse
+  } catch (e) {
+    if (e instanceof Error) {
+      console.log(e.message)
+    }
+
+    try {
+      const possible: string =
+        /```json(.*?)```/gs.exec(originalMessage)?.[1] ||
+        /```(.*?)```/gs.exec(originalMessage)?.[1] ||
+        ''
+      aiResponse = JSON.parse(possible) as AIResponse
+    } catch (e) {
+      if (e instanceof Error) {
+        console.log(e.message)
+      }
+
+      const chatCompletion2 = await openai.chat.completions.create({
+        messages: [
+          { role: 'system', content: prompt2 },
+          { role: 'user', content: input },
+        ],
+        model: 'gpt-4',
+      })
+
+      const response02 = chatCompletion2.choices[0]
+      aiResponse = {
+        MainResponse: '',
+        FriendlyResponse: response02.message.content,
+      }
+    }
+  }
+
+  return aiResponse
+}
+
+const prompt1 = `
   # Banking transactions
 
   You are an expert in bank transactions and SQL queries, and you will return a valid SQL query that accomplishes the expectations of the user.
@@ -129,9 +130,9 @@ const prompt1: string = `
         /generate - Generate the response that satisfies the user's input. 
         /h | help
   }
-`;
+`
 
-const prompt2: string = `
+const prompt2 = `
   # Banking transactions
 
   You are an expert in bank transactions and SQL queries, and you will return a valid SQL query that accomplishes the expectations of the user.
@@ -183,4 +184,4 @@ const prompt2: string = `
       /generate - Generate the response that satisfies the user's input. 
       /h | help
   }
-`;
+`

@@ -1,11 +1,11 @@
-import { type RefObject, useEffect } from 'react';
+import { type RefObject, useEffect } from 'react'
 
 const defaultOptions: MutationObserverInit = {
   attributes: false,
   characterData: true,
   childList: false,
   subtree: true,
-};
+}
 
 export const useMutationObserver = <TElement extends HTMLElement>(
   ref: RefObject<TElement> | undefined,
@@ -14,12 +14,12 @@ export const useMutationObserver = <TElement extends HTMLElement>(
 ) => {
   useEffect(() => {
     if (ref?.current) {
-      const observer = new MutationObserver(callback);
-      observer.observe(ref?.current, options);
+      const observer = new MutationObserver(callback)
+      observer.observe(ref?.current, options)
 
       return () => {
-        observer.disconnect();
-      };
+        observer.disconnect()
+      }
     }
-  }, [callback, options, ref]);
-};
+  }, [callback, options, ref])
+}
