@@ -20,32 +20,47 @@ export async function inferAI(input: string): Promise<AIResponse> {
             {role: 'system', content: prompt1},
             {role: 'user', content: input}
         ],
-        model: 'gpt-4',
+        model: 'gpt-4-1106-preview',
+        // model: 'gpt-4',
     });
 
     const response01 = chatCompletion1.choices[0];
+    const aiResponseText = response01.message.content;
+    const originalMessage = aiResponseText || ''
 
     let aiResponse: AIResponse = null;
 
     try {
-        aiResponse = JSON.parse(response01.message.content) as AIResponse
+        aiResponse = JSON.parse(originalMessage) as AIResponse
     } catch (e) {
         if (e instanceof Error) {
             console.log(e.message);
         }
-        const chatCompletion2 = await openai.chat.completions.create({
-            messages: [
-                {role: 'system', content: prompt2},
-                {role: 'user', content: input}
-            ],
-            model: 'gpt-4',
-        });
 
-        const response02 = chatCompletion2.choices[0];
-        aiResponse = {
-            MainResponse: "",
-            FriendlyResponse: response02.message.content,
+        try {
+            const possible: string = /```json(.*?)```/gs.exec(originalMessage)?.[1] || /```(.*?)```/gs.exec(originalMessage)?.[1] || ''
+            aiResponse = JSON.parse(possible) as AIResponse
+        } catch (e) {
+            if (e instanceof Error) {
+                console.log(e.message)
+            }
+
+            const chatCompletion2 = await openai.chat.completions.create({
+                messages: [
+                    {role: 'system', content: prompt2},
+                    {role: 'user', content: input}
+                ],
+                model: 'gpt-4',
+            });
+
+            const response02 = chatCompletion2.choices[0];
+            aiResponse = {
+                MainResponse: "",
+                FriendlyResponse: response02.message.content,
+            }
         }
+
+
     }
 
     return aiResponse;
@@ -108,6 +123,7 @@ const prompt1: string = `
             Make sure that the result includes all the mandatory fields, and analyze if the optional ones are needed.
             Don't include an explanation, just the JSON response that includes the MainResponse, FriendlyResponse and the DetailedResponse.
             Make sure the DetailedResponse is a valid SQL query that returns all the transactions involved in the MainResponse, showing all the fields.
+            If your response is not a valid JSON, someone might get injured. Please only respond in JSON format. If you add an explanation should be part of the "friendlyResponse" field.
           }
         }
         /generate - Generate the response that satisfies the user's input. 
