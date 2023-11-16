@@ -39,14 +39,14 @@ export function ChatBox() {
               className={
                 styles.message +
                 ' ' +
-                (message.type === 'user'
+                (message.role === 'user'
                   ? styles.userMessage
                   : styles.systemMessage)
               }
               style={
-                message.type === 'user' ? messageUserStyles : messageBotStyles
+                message.role === 'user' ? messageUserStyles : messageBotStyles
               }>
-              {message.text}
+              {message.content}
             </div>
           ))}
         </div>

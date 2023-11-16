@@ -1,7 +1,5 @@
 import OpenAI from 'openai'
-
-import { CurrentCategories } from '@/utils/db.ts'
-import { CategoriesResponse } from '@/utils/api.ts'
+import { ChatCompletionMessage } from 'openai/resources/chat/completions'
 
 const openai = new OpenAI({
   apiKey: `${import.meta.env.VITE_OPENAI_API_KEY}`,
@@ -14,14 +12,13 @@ export type AIResponse = {
   DetailedResponse?: string
 }
 
-export async function inferAI(input: string): Promise<AIResponse> {
+export async function inferAI(
+  last: ChatCompletionMessage & { role: 'user' },
+  ...previouses: ChatCompletionMessage[]
+): Promise<AIResponse> {
   const chatCompletion1 = await openai.chat.completions.create({
-    messages: [
-      { role: 'system', content: prompt1 },
-      { role: 'user', content: input },
-    ],
     model: 'gpt-4-1106-preview',
-    // model: 'gpt-4',
+    messages: [{ role: 'system', content: prompt1 }, last, ...previouses],
   })
 
   const response01 = chatCompletion1.choices[0]
@@ -49,10 +46,7 @@ export async function inferAI(input: string): Promise<AIResponse> {
       }
 
       const chatCompletion2 = await openai.chat.completions.create({
-        messages: [
-          { role: 'system', content: prompt2 },
-          { role: 'user', content: input },
-        ],
+        messages: [{ role: 'system', content: prompt2 }, last, ...previouses],
         model: 'gpt-4',
       })
 

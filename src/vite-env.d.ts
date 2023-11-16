@@ -1,28 +1,28 @@
 type Category = {
-  name: string;
-  totalAmount: number;
-};
+  name: string
+  totalAmount: number
+}
 
 type Message = {
-  text: string;
-  type: 'system' | 'user';
-};
+  content: string
+  role: 'system' | 'user'
+}
 
 type AuxReader<Type> = {
-  [key in keyof Type as undefined extends Type[key] ? key : never]?: Type[key];
+  [key in keyof Type as undefined extends Type[key] ? key : never]?: Type[key]
 } & {
-  [key in keyof Type as undefined extends Type[key] ? never : key]: Type[key];
-};
+  [key in keyof Type as undefined extends Type[key] ? never : key]: Type[key]
+}
 
-type AuxSpread<Type> = { [key in keyof Type]: Type[key] };
+type AuxSpread<Type> = { [key in keyof Type]: Type[key] }
 
 type AuxExpand<Type> = Type extends Type
   ? { [key in keyof Type]: Type[key] }
-  : never;
+  : never
 
 type Transaction = AuxExpand<
   AuxReader<typeof import('@/utils/constants').transactionExample>
->;
+>
 
 interface ImportMetaEnv {
   readonly VITE_API_SERVER_HOST: string

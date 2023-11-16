@@ -16,11 +16,11 @@ import { GenericQuery, QueryResponse } from '@/utils/db.ts'
 import styles from './PromptBox.module.css'
 
 export function PromptBox() {
-  const [transactions, setTransactions] = useContext(TransactionsContext)
-  const [tableResponse, setTableResponse] = useContext(TableResponseContext)
+  const [, setTransactions] = useContext(TransactionsContext)
+  const [, setTableResponse] = useContext(TableResponseContext)
   const [loading, setLoading] = useContext(LoadingContext)
   const [prompt, setPrompt] = useState<string>('')
-  const [messages, setMessages] = useContext(MessagesContext)
+  const [messages, addMessage] = useContext(MessagesContext)
 
   const buttonStyles: CSS.Properties = {
     backgroundColor: getTheme().colorOne,
@@ -36,15 +36,14 @@ export function PromptBox() {
 
         console.info(`👤 ${trimmedInput}`)
 
-        const userMessage: Message = {
-          text: trimmedInput,
-          type: 'user',
+        const userMessage: Message & { role: 'user' } = {
+          content: trimmedInput,
+          role: 'user',
         }
-        const msgs = [...messages, userMessage]
-        setMessages(msgs)
+        addMessage(userMessage)
         setPrompt('')
 
-        const aiResponse = await inferAI(trimmedInput)
+        const aiResponse = await inferAI(userMessage, ...messages)
 
         console.log(aiResponse)
 
@@ -126,11 +125,11 @@ export function PromptBox() {
         }
 
         const systemMessage: Message = {
-          text: friendlyResponse,
-          type: 'system',
+          content: friendlyResponse,
+          role: 'system',
         }
 
-        setMessages([...msgs, systemMessage])
+        addMessage(systemMessage)
 
         setTransactions([])
         setTableResponse(tabularResponse)
