@@ -172,7 +172,7 @@ const prompt2 = `
       AnalyzeTheOutput {
           The expected result is a JSON that needs to include 3 fields. These are the criteria to generate all the fields that compose the final result:
           - MainResponse: This is mandatory string and it is the SQL that satisfies the input of the user.
-          - FriendlyResponse: This is mandatory string and this is a friendly sentence that summarize the output. In case that the MainResponse is a query that returns one single item (when the query includes COUNT, MAX, MIN, SUM, AVG, etc.), the friendly sentence can refer that data as XXX, that we can inject once we run the sql query.
+          - FriendlyResponse: This is mandatory string and this is a friendly sentence that summarize the output. In case that the MainResponse is a query that returns one single item (when the query includes COUNT, MAX, MIN, SUM, AVG, etc.), the friendly sentence can refer that data as XXX, that we can inject once we run the sql query. Use as much markdown and emojis as you see fit – we render both gracefully.
           - DetailedResponse: This is an optional field (string). In case that the MainResponse represents an operation like COUNT, MAX, MIN, AVG, SUM, etc, you have to generate another similar query to show all the transactions involved in the MainResponse.
       }
       generate() {

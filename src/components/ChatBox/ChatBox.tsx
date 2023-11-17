@@ -12,6 +12,7 @@ import { MessagesContext } from '@/state/Messages'
 import { getTheme } from '@/utils/constants.ts'
 
 import styles from './ChatBox.module.scss'
+import MrkdwnMsgContent from '../MrkdwnMsgContent'
 
 export function ChatBox() {
   const [messages] = useContext(MessagesContext)
@@ -27,8 +28,6 @@ export function ChatBox() {
     backgroundColor: getTheme().colorOne,
   }
 
-  const messageBotStyles: CSS.Properties = {}
-
   return (
     <Box className={styles.container}>
       <Box className={styles.chat}>
@@ -43,10 +42,15 @@ export function ChatBox() {
                 [styles.assistantMessage]: message.role === 'assistant',
                 [styles.error]: 'error' in message,
               })}
-              style={
-                message.role === 'user' ? messageUserStyles : messageBotStyles
-              }>
-              {'content' in message ? message.content : message.error.message}
+              style={message.role === 'user' ? messageUserStyles : {}}>
+              {'content' in message ? (
+                <MrkdwnMsgContent
+                  content={message.content}
+                  isAssistant={message.role === 'assistant'}
+                />
+              ) : (
+                message.error.message
+              )}
             </div>
           ))}
         </div>
