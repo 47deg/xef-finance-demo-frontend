@@ -1,13 +1,16 @@
 import { useEffect, useContext, useRef } from 'react'
 import { Box } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
-import CSS from 'csstype'
+import * as CSS from 'csstype'
 import classnames from 'classnames'
 
 import { PromptBox } from '@/components/PromptBox'
+
 import { LoadingContext } from '@/state/Loading'
 import { MessagesContext } from '@/state/Messages'
+
 import { getTheme } from '@/utils/constants.ts'
+
 import styles from './ChatBox.module.scss'
 
 export function ChatBox() {
@@ -43,7 +46,7 @@ export function ChatBox() {
               style={
                 message.role === 'user' ? messageUserStyles : messageBotStyles
               }>
-              {message.content}
+              {'content' in message ? message.content : message.error.message}
             </div>
           ))}
         </div>

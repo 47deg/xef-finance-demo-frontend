@@ -18,7 +18,7 @@ export async function inferAI(
 ): Promise<AIResponse & { original: string }> {
   const chatCompletion1 = await openai.chat.completions.create({
     model: 'gpt-4-1106-preview',
-    messages: [{ role: 'system', content: prompt1 }, last, ...previouses],
+    messages: [{ role: 'system', content: prompt1 }, ...previouses, last],
   })
 
   const response01 = chatCompletion1.choices[0]
@@ -46,7 +46,7 @@ export async function inferAI(
       }
 
       const chatCompletion2 = await openai.chat.completions.create({
-        messages: [{ role: 'system', content: prompt2 }, last, ...previouses],
+        messages: [{ role: 'system', content: prompt2 }, ...previouses, last],
         model: 'gpt-4',
       })
 
