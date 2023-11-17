@@ -15,7 +15,7 @@ export type AIResponse = {
 export async function inferAI(
   last: ChatCompletionMessage & { role: 'user' },
   ...previouses: ChatCompletionMessage[]
-): Promise<AIResponse> {
+): Promise<AIResponse & { original: string }> {
   const chatCompletion1 = await openai.chat.completions.create({
     model: 'gpt-4-1106-preview',
     messages: [{ role: 'system', content: prompt1 }, last, ...previouses],
@@ -58,7 +58,7 @@ export async function inferAI(
     }
   }
 
-  return aiResponse
+  return { ...aiResponse, original: originalMessage }
 }
 
 const prompt1 = `

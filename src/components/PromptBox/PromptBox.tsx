@@ -1,8 +1,12 @@
 import { ChangeEvent, KeyboardEvent, useContext, useState } from 'react'
 import { Button, TextField } from '@mui/material'
-import CSS from 'csstype'
+import * as CSS from 'csstype'
 
-import { MessagesContext } from '@/state/Messages'
+import {
+  AssistantMessage,
+  MessagesContext,
+  UserMessage,
+} from '@/state/Messages'
 import { TableResponseContext } from '@/state/TableResponse'
 import { TransactionsContext } from '@/state/Transactions'
 import { LoadingContext } from '@/state/Loading'
@@ -36,16 +40,27 @@ export function PromptBox() {
 
         console.info(`👤 ${trimmedInput}`)
 
-        const userMessage: Message & { role: 'user' } = {
+        const userMessage: UserMessage = {
           content: trimmedInput,
           role: 'user',
         }
         addMessage(userMessage)
         setPrompt('')
 
-        const aiResponse = await inferAI(userMessage, ...messages)
+        const ingestable = messages
+          .filter(
+            (m): m is UserMessage | AssistantMessage =>
+              m.role === 'assistant' || m.role === 'user',
+          )
+          .map(m => {
+            if (m.role === 'assistant')
+              return { role: m.role, content: m.original }
+            return { role: m.role, content: m.content }
+          })
 
-        console.log(aiResponse)
+        const aiResponse = await inferAI(userMessage, ...ingestable)
+
+        console.debug(aiResponse)
 
         let mainQueryResponse: QueryResponse = null
         let detailedQueryResponse: QueryResponse = null
@@ -76,7 +91,7 @@ export function PromptBox() {
             mainQueryResponse.tableResponse.rows[0][0]
           ) {
             const possibleValue: string =
-              words.some(w => mainQueryResponse.tableResponse.columns[0]) &&
+              words.some(_w => mainQueryResponse.tableResponse.columns[0]) &&
               !mainQueryResponse.tableResponse.columns[0].includes('count')
                 ? formatCurrency(
                     mainQueryResponse.tableResponse.rows[0][0],
@@ -124,17 +139,24 @@ export function PromptBox() {
           }
         }
 
-        const systemMessage: Message = {
+        addMessage({
           content: friendlyResponse,
-          role: 'system',
-        }
-
-        addMessage(systemMessage)
+          role: 'assistant',
+          original: aiResponse.original,
+        })
 
         setTransactions([])
         setTableResponse(tabularResponse)
 
         console.info(`Set transactions to AI request data`)
+      } catch (e: unknown) {
+        if (e instanceof Error) addMessage({ role: 'system', error: e })
+        else {
+          addMessage({
+            role: 'system',
+            error: new Error('An unkown error has occurred.'),
+          })
+        }
       } finally {
         console.groupEnd()
         setLoading(false)

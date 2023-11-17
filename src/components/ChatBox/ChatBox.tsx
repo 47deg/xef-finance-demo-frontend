@@ -1,21 +1,18 @@
-import { ChangeEvent, useEffect, useContext, useRef } from 'react'
-import { Box, Grid, IconButton, InputAdornment, TextField } from '@mui/material'
-import { SendRounded } from '@mui/icons-material'
+import { useEffect, useContext, useRef } from 'react'
+import { Box } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
 import CSS from 'csstype'
+import classnames from 'classnames'
 
 import { PromptBox } from '@/components/PromptBox'
-
 import { LoadingContext } from '@/state/Loading'
 import { MessagesContext } from '@/state/Messages'
-
 import { getTheme } from '@/utils/constants.ts'
-
-import styles from './ChatBox.module.css'
+import styles from './ChatBox.module.scss'
 
 export function ChatBox() {
-  const [messages, setMessages] = useContext(MessagesContext)
-  const [loading, setLoading] = useContext(LoadingContext)
+  const [messages] = useContext(MessagesContext)
+  const [loading] = useContext(LoadingContext)
 
   const messagesEndRef = useRef(null)
   const scrollToBottom = () => {
@@ -36,13 +33,13 @@ export function ChatBox() {
           {messages.map((message, index) => (
             <div
               key={index}
-              className={
-                styles.message +
-                ' ' +
-                (message.role === 'user'
-                  ? styles.userMessage
-                  : styles.systemMessage)
-              }
+              className={classnames({
+                [styles.message]: true,
+                [styles.userMessage]: message.role === 'user',
+                [styles.systemMessage]: message.role === 'system',
+                [styles.assistantMessage]: message.role === 'assistant',
+                [styles.errorMessage]: 'error' in message,
+              })}
               style={
                 message.role === 'user' ? messageUserStyles : messageBotStyles
               }>

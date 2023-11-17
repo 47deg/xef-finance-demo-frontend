@@ -3,11 +3,6 @@ type Category = {
   totalAmount: number
 }
 
-type Message = {
-  content: string
-  role: 'system' | 'user'
-}
-
 type AuxReader<Type> = {
   [key in keyof Type as undefined extends Type[key] ? key : never]?: Type[key]
 } & {

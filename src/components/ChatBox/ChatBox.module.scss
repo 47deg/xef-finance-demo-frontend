@@ -3,7 +3,6 @@
   padding: 10px;
   border: 0px solid #142ca8;
   height: calc(100vh - 150px);
-
 }
 
 .chat {
@@ -19,7 +18,7 @@
   flex-direction: column; /* Messages are stacked vertically */
   margin: 0;
   padding: 0; /* Add padding to create space around messages */
-  border: 0px solid #FF9900; /* Add a border for visual separation (optional) */
+  border: 0px solid #ff9900; /* Add a border for visual separation (optional) */
 }
 
 /* Default message style */
@@ -34,13 +33,28 @@
 
 /* User message style */
 .userMessage {
-  background-color: var(--xef-background-color); /* Blue background for user messages */
+  background-color: var(
+    --xef-background-color
+  ); /* Blue background for user messages */
   color: #fff; /* White text color for user messages */
   align-self: flex-end; /* Right-align user messages */
 }
 
 /* System message style */
 .systemMessage {
+  background-color: #2f3542; /* Light gray background for system messages */
+  color: #ffffff; /* Dark text color for system messages */
+  text-align: left; /* Center-align system messages */
+
+  $error-color: #ed4c67;
+  &.error {
+    background-color: lighten($color: $error-color, $amount: 35%);
+    color: darken($error-color, 28%);
+    border: 1px solid $error-color;
+  }
+}
+
+.assistantMessage {
   background-color: #f0f0f0; /* Light gray background for system messages */
   color: #333; /* Dark text color for system messages */
   text-align: left; /* Center-align system messages */
