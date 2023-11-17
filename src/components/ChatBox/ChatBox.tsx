@@ -41,7 +41,7 @@ export function ChatBox() {
                 [styles.userMessage]: message.role === 'user',
                 [styles.systemMessage]: message.role === 'system',
                 [styles.assistantMessage]: message.role === 'assistant',
-                [styles.errorMessage]: 'error' in message,
+                [styles.error]: 'error' in message,
               })}
               style={
                 message.role === 'user' ? messageUserStyles : messageBotStyles

@@ -6,11 +6,17 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true,
 })
 
-export type AIResponse = {
+export type SuccessfulAIResponse = {
   MainResponse: string
   FriendlyResponse: string
   DetailedResponse?: string
 }
+
+export type ErrorAIResponse = {
+  error: string
+}
+
+export type AIResponse = ErrorAIResponse | SuccessfulAIResponse
 
 export async function inferAI(
   last: ChatCompletionMessage & { role: 'user' },

@@ -59,8 +59,9 @@ export function PromptBox() {
           })
 
         const aiResponse = await inferAI(userMessage, ...ingestable)
-
         console.debug(aiResponse)
+
+        if ('error' in aiResponse) throw new Error(aiResponse.error)
 
         let mainQueryResponse: QueryResponse = null
         let detailedQueryResponse: QueryResponse = null
