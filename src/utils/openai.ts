@@ -1,27 +1,31 @@
 import OpenAI from 'openai';
-import {CurrentCategories} from "@/utils/db.ts";
-import {CategoriesResponse} from "@/utils/api.ts";
+import { ChatCompletionMessage } from 'openai/resources/chat/completions'
 
 const openai = new OpenAI({
     apiKey: `${import.meta.env.VITE_OPENAI_API_KEY}`,
     dangerouslyAllowBrowser: true
 });
 
-export type AIResponse = {
+export type SuccessfulAIResponse = {
     MainResponse: string;
     FriendlyResponse: string;
     DetailedResponse?: string;
 };
 
-export async function inferAI(input: string): Promise<AIResponse> {
+export type ErrorAIResponse = {
+    error: string
+}
+
+export type AIResponse = ErrorAIResponse | SuccessfulAIResponse
+
+export async function inferAI(
+    last: ChatCompletionMessage & { role: 'user' },
+    ...previouses: ChatCompletionMessage[]
+): Promise<AIResponse & { original: string }> {
 
     const chatCompletion1 = await openai.chat.completions.create({
-        messages: [
-            {role: 'system', content: prompt1},
-            {role: 'user', content: input}
-        ],
         model: 'gpt-4-1106-preview',
-        // model: 'gpt-4',
+        messages: [{ role: 'system', content: prompt1 }, ...previouses, last],
     });
 
     const response01 = chatCompletion1.choices[0];
@@ -46,11 +50,8 @@ export async function inferAI(input: string): Promise<AIResponse> {
             }
 
             const chatCompletion2 = await openai.chat.completions.create({
-                messages: [
-                    {role: 'system', content: prompt2},
-                    {role: 'user', content: input}
-                ],
-                model: 'gpt-4',
+                messages: [{ role: 'system', content: prompt2 }, ...previouses, last],
+                model: 'gpt-4-1106-preview',
             });
 
             const response02 = chatCompletion2.choices[0];
@@ -63,7 +64,7 @@ export async function inferAI(input: string): Promise<AIResponse> {
 
     }
 
-    return aiResponse;
+    return { ...aiResponse, original: originalMessage }
 }
 
 const prompt1: string = `
@@ -106,7 +107,7 @@ const prompt1: string = `
       AnalyzeTheOutput {
           The expected result is a JSON that needs to include 3 fields. These are the criteria to generate all the fields that compose the final result:
           - MainResponse: This is mandatory string and it is the SQL that satisfies the input of the user.
-          - FriendlyResponse: This is mandatory string and this is a friendly sentence that summarize the output. In case that the MainResponse is a query that returns one single item (when the query includes COUNT, MAX, MIN, SUM, AVG, etc.), the friendly sentence can refer that data as XXX, that we can inject once we run the sql query.
+          - FriendlyResponse: This is mandatory string and this is a friendly sentence that summarize the output. In case that the MainResponse is a query that returns one single item (when the query includes COUNT, MAX, MIN, SUM, AVG, etc.), the friendly sentence can refer that data as XXX, that we can inject once we run the sql query. Use as much markdown and emojis as you see fit – we render both gracefully.
           - DetailedResponse: This is an optional field (string). In case that the MainResponse represents an operation like COUNT, MAX, MIN, AVG, SUM, etc, you have to generate another similar query to show all the transactions involved in the MainResponse, this query should show all the fields of the transactions
       }
       generate() {
@@ -171,7 +172,7 @@ const prompt2: string = `
       AnalyzeTheOutput {
           The expected result is a JSON that needs to include 3 fields. These are the criteria to generate all the fields that compose the final result:
           - MainResponse: This is mandatory string and it is the SQL that satisfies the input of the user.
-          - FriendlyResponse: This is mandatory string and this is a friendly sentence that summarize the output. In case that the MainResponse is a query that returns one single item (when the query includes COUNT, MAX, MIN, SUM, AVG, etc.), the friendly sentence can refer that data as XXX, that we can inject once we run the sql query.
+          - FriendlyResponse: This is mandatory string and this is a friendly sentence that summarize the output. In case that the MainResponse is a query that returns one single item (when the query includes COUNT, MAX, MIN, SUM, AVG, etc.), the friendly sentence can refer that data as XXX, that we can inject once we run the sql query. Use as much markdown and emojis as you see fit – we render both gracefully.
           - DetailedResponse: This is an optional field (string). In case that the MainResponse represents an operation like COUNT, MAX, MIN, AVG, SUM, etc, you have to generate another similar query to show all the transactions involved in the MainResponse.
       }
       generate() {
