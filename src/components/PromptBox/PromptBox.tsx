@@ -15,6 +15,7 @@ import {getTheme} from "@/utils/constants.ts";
 import {formatCurrency} from "@/utils/strings.ts";
 import {inferAI} from "@/utils/openai.ts";
 import {GenericQuery, QueryResponse} from "@/utils/db.ts";
+import {ChatCompletionMessage} from "openai/resources/chat/completions";
 
 export function PromptBox() {
     const [, setTransactions] = useContext(TransactionsContext)
@@ -56,7 +57,7 @@ export function PromptBox() {
                     })
 
 
-                const aiResponse = await inferAI(userMessage, ...ingestable)
+                const aiResponse = await inferAI(userMessage as ChatCompletionMessage & { role: 'user' }, ...ingestable)
                 console.debug(aiResponse)
 
                 if ('error' in aiResponse) throw new Error(aiResponse.error)
