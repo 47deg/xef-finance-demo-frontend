@@ -55,6 +55,7 @@ export function PromptBox() {
                         return { role: m.role, content: m.content }
                     })
 
+
                 const aiResponse = await inferAI(userMessage, ...ingestable)
                 console.debug(aiResponse)
 
