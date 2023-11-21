@@ -96,7 +96,7 @@ export function TxnGrid() {
     function genObject(c: string[], p: string[], id: number) {
         let obj = {};
         let aa = Array(c.length).fill(0);
-        aa.map((_, i) => obj[c[i]] = p[i]);
+        aa.map((_, i) => obj[c[i]] = c[i].includes("amount")? formatCurrency( p[i], getTheme()) :  p[i]);
         obj["id"] = id;
         return obj;
     }
