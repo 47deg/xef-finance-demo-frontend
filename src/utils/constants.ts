@@ -1,5 +1,8 @@
 
-export const noop = () => undefined;
+export const noop = () => {
+  console.warn('you are using an empty callback!')
+  return undefined
+}
 
 export const transactionExample = {
   id: 47245,

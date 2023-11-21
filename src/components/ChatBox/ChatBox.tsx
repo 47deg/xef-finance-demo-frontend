@@ -9,13 +9,14 @@ import {LoadingContext} from '@/state/Loading';
 import styles from './ChatBox.module.css';
 import {MessagesContext} from "@/state/Messages";
 import CircularProgress from "@mui/material/CircularProgress";
-import CSS from "csstype";
+import * as CSS from 'csstype'
+import classnames from 'classnames'
 import {getTheme} from "@/utils/constants.ts";
 
 export function ChatBox() {
 
-    const [messages, setMessages] = useContext(MessagesContext);
-    const [loading, setLoading] = useContext(LoadingContext);
+    const [messages] = useContext(MessagesContext)
+    const [loading] = useContext(LoadingContext)
 
 
     const messagesEndRef = useRef(null);
@@ -38,10 +39,17 @@ export function ChatBox() {
                     {messages.map((message, index) => (
                         <div
                             key={index}
-                            className={styles.message + ' ' + (message.type === 'user' ? styles.userMessage : styles.systemMessage)}
-                            style={(message.type === 'user' ? messageUserStyles : messageBotStyles)}
-                        >
-                            {message.text}
+                            className={classnames({
+                                [styles.message]: true,
+                                [styles.userMessage]: message.role === 'user',
+                                [styles.systemMessage]: message.role === 'system',
+                                [styles.assistantMessage]: message.role === 'assistant',
+                                [styles.error]: 'error' in message,
+                            })}
+                            style={
+                                message.role === 'user' ? messageUserStyles : messageBotStyles
+                            }>
+                            {'content' in message ? message.content : message.error.message}
                         </div>
                     ))}
                 </div>

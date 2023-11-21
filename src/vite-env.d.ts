@@ -1,12 +1,7 @@
 type Category = {
-  name: string;
-  totalAmount: number;
-};
-
-type Message = {
-  text: string;
-  type: 'system' | 'user';
-};
+  name: string
+  totalAmount: number
+}
 
 type AuxReader<Type> = {
   [key in keyof Type as undefined extends Type[key] ? key : never]?: Type[key];

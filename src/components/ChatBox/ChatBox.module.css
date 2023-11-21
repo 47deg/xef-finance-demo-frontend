@@ -41,6 +41,20 @@
 
 /* System message style */
 .systemMessage {
+  background-color: #2f3542;
+  /* Light gray background for system messages */
+  color: #ffffff;
+  /* Dark text color for system messages */
+  text-align: left;
+  /* Center-align system messages */
+}
+.systemMessage.error {
+  background-color: #fdeef1;
+  color: #9b1027;
+  border: 1px solid #ed4c67;
+}
+
+.assistantMessage {
   background-color: #f0f0f0; /* Light gray background for system messages */
   color: #333; /* Dark text color for system messages */
   text-align: left; /* Center-align system messages */
