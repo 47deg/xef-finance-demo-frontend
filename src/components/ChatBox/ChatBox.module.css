@@ -24,12 +24,19 @@
 
 /* Default message style */
 .message {
-  max-width: 80%; /* Adjust the maximum width as needed */
+  max-width: 80%;
+  /* Adjust the maximum width as needed */
   margin: 8px;
   padding: 4px 6px;
   border-radius: 4px;
   word-wrap: break-word;
   font-size: 14px;
+}
+.message :first-child {
+  margin-block-start: 0;
+}
+.message :last-child {
+  margin-block-end: 0;
 }
 
 /* User message style */
