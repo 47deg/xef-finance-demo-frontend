@@ -26,7 +26,12 @@ export async function inferAI(
     const chatCompletion1 = await openai.chat.completions.create({
         model: 'gpt-4-1106-preview',
         messages: [{ role: 'system', content: prompt1 }, ...previouses, last],
+        stream: true,
     });
+
+    for await (const chunk of chatCompletion1) {
+        console.log(chunk.choices[0]?.delta?.content || '')
+    }
 
     const response01 = chatCompletion1.choices[0];
     const aiResponseText = response01.message.content;
