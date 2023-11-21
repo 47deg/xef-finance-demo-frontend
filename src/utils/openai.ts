@@ -38,7 +38,7 @@ export async function inferAI(
         aiResponse = JSON.parse(originalMessage) as AIResponse
     } catch (e) {
         if (e instanceof Error) {
-            console.log(e.message);
+            console.log("The original response was not a valid JSON, trying to parse it as a string");
         }
 
         try {
@@ -46,7 +46,7 @@ export async function inferAI(
             aiResponse = JSON.parse(possible) as AIResponse
         } catch (e) {
             if (e instanceof Error) {
-                console.log(e.message)
+                console.log("There is not valid JSON within markdown blocks, trying to parse it as a string");
             }
 
             const chatCompletion2 = await openai.chat.completions.create({
@@ -63,6 +63,8 @@ export async function inferAI(
 
 
     }
+
+    console.log(aiResponse)
 
     return { ...aiResponse, original: originalMessage }
 }
@@ -107,7 +109,7 @@ const prompt1: string = `
       AnalyzeTheOutput {
           The expected result is a JSON that needs to include 3 fields. These are the criteria to generate all the fields that compose the final result:
           - MainResponse: This is mandatory string and it is the SQL that satisfies the input of the user.
-          - FriendlyResponse: This is mandatory string and this is a friendly sentence that summarize the output. In case that the MainResponse is a query that returns one single item (when the query includes COUNT, MAX, MIN, SUM, AVG, etc.), the friendly sentence can refer that data as XXX, that we can inject once we run the sql query. Use as much markdown and emojis as you see fit – we render both gracefully.
+          - FriendlyResponse: This is mandatory string and this is a friendly sentence that summarize the output. In case that the MainResponse is a query that returns one single row (when the query includes COUNT, MAX, MIN, SUM, AVG, etc.), the friendly sentence can refer that data as XXX, that we can inject once we run the sql query. Use as much markdown and emojis as you see fit – we render both gracefully.
           - DetailedResponse: This is an optional field (string). In case that the MainResponse represents an operation like COUNT, MAX, MIN, AVG, SUM, etc, you have to generate another similar query to show all the transactions involved in the MainResponse, this query should show all the fields of the transactions
       }
       generate() {
@@ -124,7 +126,9 @@ const prompt1: string = `
             Make sure that the result includes all the mandatory fields, and analyze if the optional ones are needed.
             Don't include an explanation, just the JSON response that includes the MainResponse, FriendlyResponse and the DetailedResponse.
             Make sure the DetailedResponse is a valid SQL query that returns all the transactions involved in the MainResponse, showing all the fields.
+            Remember that you can use markdown and emojis in the FriendlyResponse – we render both gracefully.
             If your response is not a valid JSON, someone might get injured. Please only respond in JSON format. If you add an explanation should be part of the "friendlyResponse" field.
+            Do not include the XXX when the MainResponse is a query that returns more than one row.
           }
         }
         /generate - Generate the response that satisfies the user's input. 
@@ -179,6 +183,7 @@ const prompt2: string = `
         Analyze Schema.
         Then Analyze Field Types.
         Finally generate a friendly response to the user input.
+        Remember that you can use markdown and emojis in the FriendlyResponse – we render both gracefully.
         Knowing the SQL schema and the nature of the fields, feel free to include an example of questions that the user can formulate.
       }
       /generate - Generate the response that satisfies the user's input. 

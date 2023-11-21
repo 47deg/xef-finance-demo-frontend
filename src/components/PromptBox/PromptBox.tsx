@@ -98,10 +98,10 @@ export function PromptBox() {
                 //Tabular content
                 if(detailedQueryResponse && mainQueryResponse) {
                     console.log('1');
-                    if(detailedQueryResponse.rowCount > mainQueryResponse.rowCount) {
+                    if(mainQueryResponse.rowCount > 2) {
                         console.log('2');
-                        tabularResponse = detailedQueryResponse.tableResponse
-                        // tabularResponse = mainQueryResponse.tableResponse
+                        // tabularResponse = detailedQueryResponse.tableResponse
+                        tabularResponse = mainQueryResponse.tableResponse
                     }
                     else {
                         console.log('3');
