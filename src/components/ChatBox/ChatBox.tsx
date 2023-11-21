@@ -12,6 +12,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import * as CSS from 'csstype'
 import classnames from 'classnames'
 import {getTheme} from "@/utils/constants.ts";
+import MrkdwnMsgContent from '../MrkdwnMsgContent'
 
 export function ChatBox() {
 
@@ -29,7 +30,6 @@ export function ChatBox() {
         backgroundColor: getTheme().colorOne,
     };
 
-    const messageBotStyles: CSS.Properties = {};
 
     return (
         <Box className={styles.container}>
@@ -46,10 +46,15 @@ export function ChatBox() {
                                 [styles.assistantMessage]: message.role === 'assistant',
                                 [styles.error]: 'error' in message,
                             })}
-                            style={
-                                message.role === 'user' ? messageUserStyles : messageBotStyles
-                            }>
-                            {'content' in message ? message.content : message.error.message}
+                            style={message.role === 'user' ? messageUserStyles : {}}>
+                            {'content' in message ? (
+                                <MrkdwnMsgContent
+                                    content={message.content}
+                                    isAssistant={message.role === 'assistant'}
+                                />
+                            ) : (
+                                message.error.message
+                            )}
                         </div>
                     ))}
                 </div>

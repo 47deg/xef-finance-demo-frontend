@@ -16,6 +16,7 @@
     "@mui/material": "5.13.6",
     "@mui/x-data-grid": "6.10.2",
     "@neondatabase/serverless": "^0.6.0",
+    "@ts-stack/markdown": "^1.5.0",
     "@types/styled-components": "^5.1.28",
     "classnames": "^2.3.2",
     "openai": "^4.12.3",
